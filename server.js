@@ -90,22 +90,13 @@ mongo.connect(URI, (error, client) => {
       })
     );
 
-    // post API
-    app.post(
-      "/user/submit",
-      passport.authenticate("local", { failureRedirect: "/failure" }),
-      function (req, res) {
-        // console.log(req.user)
-        var username = req.body.username;
-        res.redirect("/profile");
-      }
-    );
 
     // checks user status
     // if not logged in then redirect user to login page
     let isSignedIn = (req, res, next) => {
       if (req.isAuthenticated()) {
-        // if user signed in (cookie does exist)
+        // if user signed in (cookie exists)
+        console.log("user's cookie: " + req.session.passport.user); // cookie 
         next();
       } else {
         // if user doesn't signed in
@@ -115,17 +106,17 @@ mongo.connect(URI, (error, client) => {
 
     // *********************** ROUTES ****************************
     app.get("/", (req, res) => {
-      req.session.count++; // every time page reloads, it increments the count
-      console.log(req.session);
+      // req.session.count++; // every time page reloads, it increments the count
+      // console.log(req.session);
 
       res.render("login", {
         website_msg: "FanClub is excited to have you with us!",
       });
     });
 
-    app.get("/failure", isSignedIn, (req, res) => {
+    app.get("/failure", (req, res) => {
       res.render("failure", {
-        website_msg: "Try again to login!",
+        website_msg: "Something went wrong, Login again!",
       });
     });
 
@@ -135,8 +126,17 @@ mongo.connect(URI, (error, client) => {
 
     // *********************** ROUTES ENDED ****************************
 
+        // post API
+        app.post(
+          "/user/submit",
+          passport.authenticate("local", { failureRedirect: "/failure" }),
+          function (req, res) {
+            // console.log(req.user)
+            var username = req.body.username;
+            res.redirect("/profile");
+          }
+        );
 
-   
-  
-  }
+
+  } // else bracket closed
 });
