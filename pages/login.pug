@@ -1,0 +1,21 @@
+html(lang="en")
+  head
+    title= "Login"
+  body
+    h1=  "Hello Fan. Welcome to PUG"    
+    p= "Login to explore"
+   
+
+    <form action='/user/submit' method='post'>
+      label Username: 
+        input(name='username', type='text')
+        br 
+        br
+      label Password: 
+        input(name='password', type='password')
+        br 
+        br
+        
+       
+      input(type="submit" value="Login")
+      </form>
