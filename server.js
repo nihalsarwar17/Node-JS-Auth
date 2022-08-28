@@ -32,24 +32,38 @@ mongo.connect(URI, (error, client) => {
       console.log("server is running on 3000 port");
       console.log("Connected to the database");
     });
+
+    // *********************** ROUTES ****************************
     app.get("/", (req, res) => {
       console.log(req.session);
-      res.render("homepage", { message: "Please sign in to proceed" });
+      res.render("login", { message: "Please sign in to proceed" });
     });
-    
+
+    app.get("/profile", (req, res) => {
+      console.log(req.session);
+      res.render("user", { message: "Lets start exploring" });
+    }); 
+
+    app.get("/failure", (req, res) => {
+      console.log(req.session);
+      res.render("failure", { message: "Invalid Credentials, Please Login again" });
+    });
+
+    // *********************** ROUTES ENDED **********************
+
     // Save User ID in a cookie
     // user is the mongoDB collection where users data is stored
     passport.serializeUser((user, done) => {
       done(null, user._id);
     });
-    
+
     // take user ID from cookie and retrieve user's data
     passport.deserializeUser((userId, done) => {
       db.collection("users").findOne(
         // userId retrieves the ID from the cookie and assign it to an object
         // so it could find the user details from the collection to its corresponding ID
         { _id: new ObjectId(userId) },
-    
+
         // once it matches the ID then it retrieves all the user info
         (error, doc) => {
           // doc has the detailed info of users
@@ -57,7 +71,37 @@ mongo.connect(URI, (error, client) => {
         }
       );
     });
+
+    let findUserDocument = new LocalStrategy((username, password, done) => {
+      db.collection("users").findOne(
+        { username: username },
+        // user contains id & password
+        (err, user) => {
+          if (err) {
+            return done(err);
+          } else if (!user) {
+            // if user doesn't exist
+            done(null, false); // no user found
+          } else if (user.username !== password) {
+            done(null, false); // invalid password
+          } else {
+            done(null, user);
+          }
+        }
+      );
+    });
+
+    // authenticates users login crendentials
+    passport.use(findUserDocument);
+    
+    app.post(
+      "/user/submit",
+      passport.authenticate("local", { failureRedirect: "/failure" }),
+      function (req, res) {
+        // res.redirect("/profile");
+        var username = req.body.username;
+        res.redirect("/profile");
+      }
+    );
   } // else bracket
 });
-
-
