@@ -34,34 +34,11 @@ mongo.connect(URI, (error, client) => {
       console.log("Connected to the database");
     });
 
-    // *********************** ROUTES ****************************
-    app.get("/", (request, res) => {
-      request.session.count++; // every time page reloads, it increments the count
-      console.log(request.session);
-
-      res.render("login", {
-        website_msg: "FanClub is excited to have you with us!",
-      });
-    });
-
-    app.get("/failure", (request, resp) => {
-      resp.render("failure", {
-        website_msg: "Try again to login!",
-      });
-    });
-
-    app.get("/profile", function (req, res, next) {
-      res.render("user", { userName: req.user.name, image: req.user.picture });
-    });
-
-    // *********************** ROUTES ENDED ****************************
-
     // ================= store User ID in cookie ===================
 
     // save User ID in a cookies
     // user => stores all properties of user data
     // done => determine what user data should store in the cookie from the user object
-
     passport.serializeUser((user, done) => {
       done(null, user._id);
     });
@@ -76,7 +53,7 @@ mongo.connect(URI, (error, client) => {
 
         // once it matches the ID then it retrieves all the user info
         (error, doc) => {
-          // doc has the detailed info of users
+          // doc has all the info of user
           done(null, doc);
         }
       );
@@ -85,7 +62,7 @@ mongo.connect(URI, (error, client) => {
     const findUserDocument = new LocalStrategy((username, password, done) => {
       db.collection("users").findOne(
         { username: username },
-        // user has all the info of the user
+        // user object has all the info of the logged in user
         (err, user) => {
           if (err) {
             return done(err);
@@ -113,28 +90,53 @@ mongo.connect(URI, (error, client) => {
       })
     );
 
+    // post API
     app.post(
       "/user/submit",
       passport.authenticate("local", { failureRedirect: "/failure" }),
       function (req, res) {
-        // res.redirect("/profile");
+        // console.log(req.user)
         var username = req.body.username;
         res.redirect("/profile");
       }
     );
 
-    // let isSignedIn = (req, res, next) => {
-    //   if (req.isAuthenticated()) {
-    //     // if user signed in
-    //     next();
-    //   } else {
-    //     // if user doesn't signed in
-    //     res.redirect("/");
-    //   }
-    // };
+    // checks user status
+    // if not logged in then redirect user to login page
+    let isSignedIn = (req, res, next) => {
+      if (req.isAuthenticated()) {
+        // if user signed in (cookie does exist)
+        next();
+      } else {
+        // if user doesn't signed in
+        res.redirect("/"); // (cookie doesn't exist)
+      }
+    };
 
-    // app.get("/profile", isSignedIn, function (req, res, next) {
-    //   res.render("user", { userName: req.user.name, image: req.user.picture });
-    // });
+    // *********************** ROUTES ****************************
+    app.get("/", (req, res) => {
+      req.session.count++; // every time page reloads, it increments the count
+      console.log(req.session);
+
+      res.render("login", {
+        website_msg: "FanClub is excited to have you with us!",
+      });
+    });
+
+    app.get("/failure", isSignedIn, (req, res) => {
+      res.render("failure", {
+        website_msg: "Try again to login!",
+      });
+    });
+
+    app.get("/profile", isSignedIn, function (req, res, next) {
+      res.render("user", { userName: req.user.name, image: req.user.picture });
+    });
+
+    // *********************** ROUTES ENDED ****************************
+
+
+   
+  
   }
 });
