@@ -133,6 +133,7 @@ mongo.connect(URI, (error, client) => {
         res.redirect("/");
       });
     });
+    
 
     // *********************** ROUTES ENDED ****************************
 
