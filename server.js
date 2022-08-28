@@ -90,13 +90,12 @@ mongo.connect(URI, (error, client) => {
       })
     );
 
-
     // checks user status
     // if not logged in then redirect user to login page
     let isSignedIn = (req, res, next) => {
       if (req.isAuthenticated()) {
         // if user signed in (cookie exists)
-        console.log("user's cookie: " + req.session.passport.user); // cookie 
+        // console.log("user's cookie: " + req.session.passport.user); // cookie Id
         next();
       } else {
         // if user doesn't signed in
@@ -124,19 +123,28 @@ mongo.connect(URI, (error, client) => {
       res.render("user", { userName: req.user.name, image: req.user.picture });
     });
 
+    // can't open profile after logout
+    app.get("/logout", function (req, res, next) {
+      req.logout(function (err) {
+        // do this
+        if (err) {
+          return next(err);
+        } // do this
+        res.redirect("/");
+      });
+    });
+
     // *********************** ROUTES ENDED ****************************
 
-        // post API
-        app.post(
-          "/user/submit",
-          passport.authenticate("local", { failureRedirect: "/failure" }),
-          function (req, res) {
-            // console.log(req.user)
-            var username = req.body.username;
-            res.redirect("/profile");
-          }
-        );
-
-
+    // post API
+    app.post(
+      "/user/submit",
+      passport.authenticate("local", { failureRedirect: "/failure" }),
+      function (req, res) {
+        // console.log(req.user)
+        // var username = req.body.username;
+        res.redirect("/profile");
+      }
+    );
   } // else bracket closed
 });
