@@ -133,12 +133,11 @@ mongo.connect(URI, (error, client) => {
         res.redirect("/");
       });
     });
-     
-    // when wrong Route / URL puts in
-    app.use((req, res) => {
-      res.status(404).type("text").send("URL NOT FOUND");
-    });
 
+    // when wrong Route / URL puts in
+    // app.use((req, res) => {
+    //   res.status(404).type("text").send("URL NOT FOUND");
+    // });
 
     // *********************** ROUTES ENDED ****************************
 
@@ -148,7 +147,7 @@ mongo.connect(URI, (error, client) => {
       passport.authenticate("local", { failureRedirect: "/failure" }),
       function (req, res) {
         // console.log(req.user)
-        // var username = req.body.username;
+        var username = req.body.username;
         res.redirect("/profile");
       }
     );
