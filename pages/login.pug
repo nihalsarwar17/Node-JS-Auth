@@ -3,7 +3,7 @@ html(lang="en")
     title= "Login"
   body
     h1=  "Hello User. Welcome to PUG"    
-    p= "Login to explore"
+    h3= "Login to get connected"
    
 
     <form action='/user/submit' method='post'>
@@ -19,3 +19,6 @@ html(lang="en")
        
       input(type="submit" value="Login")
       </form>
+
+      p= "Not registered yet?" 
+      a(href="/signup") Signup
