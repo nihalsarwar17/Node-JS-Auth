@@ -4,21 +4,24 @@ body
 
     <form action='/register' method='post'>
       label Name:  
-        input(name='name', type='text')
+        input(name='name', type='text' required)
         br 
         br
       label Username: 
-        input(name='username', type='text')
+        input(name='username', type='text' required)
         br 
         br
       label Password: 
-        input(name='password', type='password')
+        input(name='password', type='password' required)
         br 
         br
-      label Picture: 
-        input(name='picture', type='text')
+      label Picture URL: 
+        input(name='picture', type='text' required)
         br 
         br
        
       input(type="submit" value="Signup")
       </form>
+
+      p= "Already have an account?" 
+      a(href="/") Login

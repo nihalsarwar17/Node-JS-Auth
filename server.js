@@ -197,9 +197,9 @@ mongo.connect(URI, (error, client) => {
 
     // *********************** Post APIs Ended ****************************
 
-    // when wrong Route OR URL puts in
+    // when wrong Route/URL puts in
     app.use((req, res) => {
-      res.status(404).type("text").send("URL NOT FOUND");
+      res.status(404).type("text").send("Sorry! Invalid URL");
     });
 
   } // else bracket closed
